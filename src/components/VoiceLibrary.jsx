@@ -7,7 +7,7 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
   const [playingId, setPlayingId] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('Fall De-escalation');
-  const [newSpeaker, setNewSpeaker] = useState('Son (Aarif)');
+  const [newSpeaker, setNewSpeaker] = useState('Son (Arjun)');
   const timerRef = useRef(null);
 
   // Speech Synthesis fallback so voice clips play audible voice prompts in browser!
@@ -116,10 +116,10 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
               onChange={(e) => setNewSpeaker(e.target.value)}
               className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
             >
-              <option value="Son (Aarif)">Son (Aarif)</option>
-              <option value="Daughter (Krishnaja)">Daughter (Krishnaja)</option>
-              <option value="Spouse (Anitha)">Spouse (Anitha)</option>
-              <option value="Grandchild (Rohan)">Grandchild (Rohan)</option>
+              <option value="Son (Arjun)">Son (Arjun)</option>
+              <option value="Daughter (Kavitha)">Daughter (Kavitha)</option>
+              <option value="Spouse (Sumithra)">Spouse (Sumithra)</option>
+              <option value="Grandchild (Advaith)">Grandchild (Advaith)</option>
             </select>
           </div>
         </div>

@@ -30,7 +30,7 @@ export default function App() {
 
   // Senior GPS & Geofence State
   const [seniorLocation, setSeniorLocation] = useState({
-    name: 'Mr. Shiv Shankar (Father)',
+    name: 'Mr. Raghunath Pillai (Father)',
     lat: 8.8932,
     lng: 76.6141,
     homeLat: 8.8932,
@@ -46,7 +46,7 @@ export default function App() {
       id: 1,
       title: 'Fall De-Escalation Anchor',
       category: 'Fall De-escalation',
-      speaker: 'Son (Aarif)',
+      speaker: 'Son (Arjun)',
       duration: '4s',
       text: 'Dad, stay still! Help is on the way. You are completely safe.',
       isDefault: true
@@ -55,7 +55,7 @@ export default function App() {
       id: 2,
       title: 'Anti-Removal Persuasion',
       category: 'Band Removal Persuasion',
-      speaker: 'Daughter (Krishnaja)',
+      speaker: 'Daughter (Kavitha)',
       duration: '5s',
       text: 'Dad, please keep this neckband on. It keeps you connected with us.',
       isDefault: true
@@ -64,7 +64,7 @@ export default function App() {
       id: 3,
       title: 'Morning Medication Clip',
       category: 'Medication Prompt',
-      speaker: 'Spouse (Anitha)',
+      speaker: 'Spouse (Sumithra)',
       duration: '4s',
       text: 'Good morning! It is time to take your morning diabetes medicine.',
       isDefault: false
@@ -73,7 +73,7 @@ export default function App() {
       id: 4,
       title: 'Hydration Prompt',
       category: 'Hydration Reminder',
-      speaker: 'Grandchild (Rohan)',
+      speaker: 'Grandchild (Advaith)',
       duration: '3s',
       text: 'Grandpa, drink a glass of water now to stay healthy!',
       isDefault: false
@@ -88,7 +88,7 @@ export default function App() {
       time: '08:30',
       category: 'Medication',
       voiceTitle: 'Morning Medication Clip',
-      voiceSpeaker: 'Spouse (Anitha)',
+      voiceSpeaker: 'Spouse (Sumithra)',
       days: 'Mon, Tue, Wed, Thu, Fri, Sat, Sun',
       active: true
     },
@@ -98,7 +98,7 @@ export default function App() {
       time: '14:00',
       category: 'Hydration',
       voiceTitle: 'Hydration Prompt',
-      voiceSpeaker: 'Grandchild (Rohan)',
+      voiceSpeaker: 'Grandchild (Advaith)',
       days: 'Mon, Tue, Wed, Thu, Fri, Sat, Sun',
       active: true
     },
@@ -108,7 +108,7 @@ export default function App() {
       time: '17:30',
       category: 'Routine',
       voiceTitle: 'Fall De-Escalation Anchor',
-      voiceSpeaker: 'Son (Aarif)',
+      voiceSpeaker: 'Son (Arjun)',
       days: 'Mon, Wed, Fri',
       active: true
     }
@@ -149,9 +149,9 @@ export default function App() {
 
   // Caregivers State
   const [caregivers, setCaregivers] = useState([
-    { id: 1, name: 'Aarif Nazar', relation: 'Son', phone: '+91 98470 12345', email: 'aarif@closeby.in', priority: 'Primary', isPrimary: true },
-    { id: 2, name: 'Krishnaja S', relation: 'Daughter', phone: '+91 94471 67890', email: 'krishnaja@gmail.com', priority: 'Secondary', isPrimary: false },
-    { id: 3, name: 'Abhinav K', relation: 'Primary Care Doctor', phone: '+91 98950 11223', email: 'dr.abhinav@tkmce.ac.in', priority: 'Secondary', isPrimary: false }
+    { id: 1, name: 'Arjun Krishnamurthy', relation: 'Son', phone: '+91 98470 12345', email: 'arjun@closeby.in', priority: 'Primary', isPrimary: true },
+    { id: 2, name: 'Kavitha Venkataraman', relation: 'Daughter', phone: '+91 94471 67890', email: 'kavitha@gmail.com', priority: 'Secondary', isPrimary: false },
+    { id: 3, name: 'Dr. Vikram Nambiar', relation: 'Primary Care Doctor', phone: '+91 98950 11223', email: 'dr.vikram@tkmce.ac.in', priority: 'Secondary', isPrimary: false }
   ]);
 
   // Simulator Handler: Fall Alert
