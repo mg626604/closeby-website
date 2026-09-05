@@ -14,7 +14,7 @@ export default function VitalsDashboard({ vitalsHistory, currentHeartRate, steps
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">Vitals & Telemetry Analytics</h2>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-            Continuous optical PPG sensor telemetry (MAX30102) & motion tracking.
+            MAX30102-based heart-rate & SpO₂ monitoring with activity tracking. Demo monitoring values only.
           </p>
         </div>
 
@@ -64,7 +64,7 @@ export default function VitalsDashboard({ vitalsHistory, currentHeartRate, steps
           </div>
           <div className="mt-3">
             <div className="text-2xl font-black text-slate-900 dark:text-white">88% <span className="text-xs font-normal text-slate-600 dark:text-slate-400">(42h left)</span></div>
-            <span className="text-[11px] text-emerald-400 font-medium mt-1 block">1200mAh Li-Po healthy</span>
+            <span className="text-[11px] text-emerald-400 font-medium mt-1 block">1200mAh Li-Po Battery • Demo value</span>
           </div>
         </div>
 

@@ -5,9 +5,11 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
   const [isRecording, setIsRecording] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const [playingId, setPlayingId] = useState(null);
+  const [syncMessage, setSyncMessage] = useState('');
   const [newTitle, setNewTitle] = useState('');
   const [newCategory, setNewCategory] = useState('Fall De-escalation');
   const [newSpeaker, setNewSpeaker] = useState('Son (Arjun)');
+  const fileInputRef = useRef(null);
   const timerRef = useRef(null);
 
   // Speech Synthesis fallback so voice clips play audible voice prompts in browser!
@@ -50,15 +52,53 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
         speaker: newSpeaker,
         duration: `${recordingTime}s`,
         text: `Hey Dad, it's ${newSpeaker.split(' ')[0]}. ${newTitle} - Everything is alright, keep calm.`,
-        isDefault: false
+        isDefault: false,
+        syncStatus: 'Sync Pending'
       };
-      setVoiceClips([newClip, ...voiceClips]);
+      setVoiceClips((prev) => [newClip, ...prev]);
+      setSyncMessage('VOICE SAVED');
+      setTimeout(() => {
+        setSyncMessage('SYNCING TO CLOSEBY...');
+        setTimeout(() => {
+          setVoiceClips((prev) => prev.map((clip) => clip.id === newClip.id ? { ...clip, syncStatus: '✓ Synced to Neckband' } : clip));
+          setSyncMessage('✓ SYNCED TO NECKBAND');
+        }, 900);
+      }, 600);
       setNewTitle('');
     }
   };
 
   const handleDelete = (id) => {
     setVoiceClips(voiceClips.filter((c) => c.id !== id));
+  };
+
+  const handleAudioUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const clipName = file.name.replace(/\.[^/.]+$/, '') || 'Uploaded Voice Prompt';
+    const uploadClip = {
+      id: Date.now(),
+      title: clipName,
+      category: newCategory,
+      speaker: newSpeaker,
+      duration: 'Uploaded',
+      text: `Uploaded voice prompt for ${newCategory.toLowerCase()}.`,
+      isDefault: false,
+      syncStatus: 'Sync Pending'
+    };
+
+    setVoiceClips((prev) => [uploadClip, ...prev]);
+    setSyncMessage('VOICE SAVED');
+    setTimeout(() => {
+      setSyncMessage('SYNCING TO CLOSEBY...');
+      setTimeout(() => {
+        setVoiceClips((prev) => prev.map((clip) => clip.id === uploadClip.id ? { ...clip, syncStatus: '✓ Synced to Neckband' } : clip));
+        setSyncMessage('✓ SYNCED TO NECKBAND');
+      }, 900);
+    }, 600);
+
+    event.target.value = '';
   };
 
   return (
@@ -77,44 +117,49 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
         </div>
 
         <span className="bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 text-xs font-semibold px-3 py-1 rounded-full border border-purple-300 dark:border-purple-500/30">
-          Zero Cloud Latency (&lt;50ms SPI Storage)
+          Local Emergency Voice Playback
         </span>
       </div>
 
+      {syncMessage && (
+        <div className="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30 text-xs font-bold rounded-lg px-3 py-2 tracking-wide">
+          {syncMessage}
+        </div>
+      )}
+
       {/* Voice Recorder Module */}
-      <div className="bg-white/90 dark:bg-slate-900/80 border border-slate-300/80 dark:border-slate-700/80 rounded-xl p-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        
-        <div className="w-full md:w-auto flex-1 flex flex-col gap-3">
+      <div className="bg-white/90 dark:bg-slate-900/80 border border-slate-300/80 dark:border-slate-700/80 rounded-xl p-4">
+        <div className="flex flex-col gap-4">
           <div className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
             <Radio className="w-4 h-4 text-red-400" />
             <span>Record New Familial Voice Prompt</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-2">
             <input
               type="text"
               placeholder="Clip Name (e.g., Dad Fall Reassurance)"
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-blue-500"
             />
             
             <select
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-blue-500"
             >
               <option value="Fall De-escalation">Fall De-escalation</option>
               <option value="Band Removal Persuasion">Band Removal Persuasion</option>
               <option value="Medication Prompt">Medication Prompt</option>
               <option value="Hydration Reminder">Hydration Reminder</option>
-              <option value="Geofence Guidance">Geofence Guidance</option>
+              <option value="Other personalized reminders">Other personalized reminders</option>
             </select>
 
             <select
               value={newSpeaker}
               onChange={(e) => setNewSpeaker(e.target.value)}
-              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+              className="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 text-xs rounded-lg px-3 py-2.5 focus:outline-none focus:border-blue-500"
             >
               <option value="Son (Arjun)">Son (Arjun)</option>
               <option value="Daughter (Kavitha)">Daughter (Kavitha)</option>
@@ -122,29 +167,44 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
               <option value="Grandchild (Advaith)">Grandchild (Advaith)</option>
             </select>
           </div>
-        </div>
 
-        {/* Record Button */}
-        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-          {isRecording ? (
+          <div className="flex flex-col sm:flex-row items-stretch gap-3 sm:justify-end">
             <button
-              onClick={stopRecording}
-              className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-all shadow-lg shadow-red-900/40 animate-pulse"
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="flex items-center justify-center gap-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 font-semibold text-xs px-4 py-2.5 rounded-lg transition-all"
             >
-              <Square className="w-4 h-4 fill-white" />
-              <span>Stop Recording ({recordingTime}s)</span>
+              <Upload className="w-4 h-4 text-blue-400" />
+              <span>Upload Audio</span>
             </button>
-          ) : (
-            <button
-              onClick={startRecording}
-              className="flex items-center gap-2 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-all shadow-lg shadow-red-900/20"
-            >
-              <Mic className="w-4 h-4" />
-              <span>Start Recording</span>
-            </button>
-          )}
-        </div>
 
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={handleAudioUpload}
+            />
+
+            {isRecording ? (
+              <button
+                onClick={stopRecording}
+                className="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-all shadow-lg shadow-red-900/40 animate-pulse"
+              >
+                <Square className="w-4 h-4 fill-white" />
+                <span>Stop Recording ({recordingTime}s)</span>
+              </button>
+            ) : (
+              <button
+                onClick={startRecording}
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-rose-500 hover:from-red-500 hover:to-rose-400 text-white font-semibold text-xs px-4 py-2.5 rounded-lg transition-all shadow-lg shadow-red-900/20"
+              >
+                <Mic className="w-4 h-4" />
+                <span>Start Recording</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Voice Clips List */}
@@ -191,6 +251,10 @@ export default function VoiceLibrary({ voiceClips, setVoiceClips }) {
                 <p className="text-xs italic text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-950/50 p-2.5 rounded-lg border border-slate-200 dark:border-slate-800 mt-3">
                   "{clip.text}"
                 </p>
+
+                <div className="mt-2 text-[10px] font-semibold text-purple-700 dark:text-purple-300">
+                  {clip.syncStatus || '✓ Synced to Neckband'}
+                </div>
               </div>
 
               {/* Controls Bar */}

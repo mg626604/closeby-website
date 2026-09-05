@@ -14,7 +14,15 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeTab, setActiveTab] = useState('map');
   const [incomingCallModal, setIncomingCallModal] = useState(false);
-  const [callReason, setCallReason] = useState('Automatic Emergency Call - Fall Detected');
+  const [callReason, setCallReason] = useState('AUTOMATIC FALL EMERGENCY CALL TRIGGERED');
+  const [callState, setCallState] = useState('incoming');
+  const [demoSequenceTimer, setDemoSequenceTimer] = useState(null);
+  const [liveEvent, setLiveEvent] = useState({
+    title: 'FALL DETECTED',
+    patient: 'Mr. Raghunath Pillai',
+    time: 'Today • 10:30 AM',
+    status: 'Incoming call from CloseBY Neckband'
+  });
   
   // Theme Management
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -119,19 +127,23 @@ export default function App() {
     {
       id: 201,
       type: 'fall',
-      title: 'FALL DETECTED (Center-of-Mass IMU)',
-      description: 'Torso G-force impact 3.1G + Altitude drop 0.5m detected in Living Room.',
+      title: 'FALL DETECTED',
+      description: 'CloseBY automatically initiated an emergency call after a possible fall near the living area.',
       voicePlayed: 'Dad, stay still! Help is on the way.',
       timestamp: 'Today, 10:30 AM',
+      location: 'Available',
+      callStatus: 'Incoming Call',
       read: false
     },
     {
       id: 202,
       type: 'removal',
-      title: 'Band Unclasped Notice',
-      description: 'Magnetic throat clasp opened. Familial voice anchor triggered.',
-      voicePlayed: 'Dad, please keep this neckband on.',
+      title: 'BAND REMOVED',
+      description: 'Clasp + body-proximity sensing detected a possible band removal.',
+      voicePlayed: 'Dad, please keep this neckband on. It keeps you connected with us.',
       timestamp: 'Yesterday, 04:15 PM',
+      location: 'Garden Area',
+      callStatus: 'Alert Sent',
       read: true
     }
   ]);
@@ -156,48 +168,81 @@ export default function App() {
 
   // Simulator Handler: Fall Alert
   const handleSimulateFall = () => {
-    // 1. Play real speech prompt in browser
+    if (demoSequenceTimer) {
+      clearTimeout(demoSequenceTimer);
+    }
+
     window.speechSynthesis.cancel();
-    const speech = new SpeechSynthesisUtterance("Dad, stay still! Help is on the way. You are completely safe.");
+    const speech = new SpeechSynthesisUtterance("Dad, stay still! Help is on the way.");
     speech.rate = 0.95;
     window.speechSynthesis.speak(speech);
 
-    // 2. Add new alert log
     const newAlert = {
       id: Date.now(),
       type: 'fall',
-      title: '🚨 SIMULATED FALL DETECTED',
-      description: 'Torso G-force impact 3.4G + altitude drop detected near TKMCE campus.',
+      title: 'FALL DETECTED',
+      description: 'CloseBY detected a possible fall. The familiar family voice played locally and an emergency call was initiated automatically.',
       voicePlayed: 'Dad, stay still! Help is on the way.',
       timestamp: 'Just now',
+      location: 'Available',
+      callStatus: 'Incoming Call',
       read: false
     };
 
-    setAlerts([newAlert, ...alerts]);
-    setCallReason('Automatic Fall Emergency Call Triggered');
+    setAlerts((prev) => [newAlert, ...prev]);
+    setLiveEvent({
+      title: 'FALL DETECTED',
+      patient: 'Mr. Raghunath Pillai',
+      time: 'Today • 10:30 AM',
+      status: 'Incoming call — CloseBY Neckband'
+    });
+
     setIncomingCallModal(true);
+    setCallState('sequence');
+    setCallReason('FALL DETECTED');
+
+    const nextTimer = setTimeout(() => {
+      setCallReason('FAMILIAR VOICE PLAYED');
+    }, 1200);
+
+    const nextTimer2 = setTimeout(() => {
+      setCallReason('AUTOMATIC FALL EMERGENCY CALL TRIGGERED');
+      setCallState('incoming');
+    }, 2400);
+
+    setDemoSequenceTimer(nextTimer2);
+    setTimeout(() => {
+      clearTimeout(nextTimer);
+      clearTimeout(nextTimer2);
+    }, 2600);
   };
 
   // Simulator Handler: Band Removal
   const handleSimulateRemoval = () => {
-    // 1. Play speech prompt
     window.speechSynthesis.cancel();
     const speech = new SpeechSynthesisUtterance("Dad, please keep this neckband on. It keeps you connected with us.");
     speech.rate = 0.95;
     window.speechSynthesis.speak(speech);
 
-    // 2. Add alert log
     const newAlert = {
       id: Date.now(),
       type: 'removal',
-      title: '⚠️ BAND UNCLASPED / REMOVED',
-      description: 'Magnetic throat clasp unlatched. Familial voice persuasion activated.',
-      voicePlayed: 'Dad, please keep this neckband on.',
+      title: 'BAND REMOVED',
+      description: 'Clasp + body-proximity sensing indicates a possible neckband removal event.',
+      voicePlayed: 'Dad, please keep this neckband on. It keeps you connected with us.',
       timestamp: 'Just now',
+      location: 'TKMCE Campus, Kollam',
+      callStatus: 'Alert Sent',
       read: false
     };
 
-    setAlerts([newAlert, ...alerts]);
+    setAlerts((prev) => [newAlert, ...prev]);
+    setLiveEvent({
+      title: 'BAND REMOVED',
+      patient: 'Mr. Raghunath Pillai',
+      time: 'Today • 10:35 AM',
+      status: 'Removal alert sent to caregiver'
+    });
   };
 
   const handleMarkAsRead = (id) => {
@@ -227,6 +272,39 @@ export default function App() {
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-8 flex flex-col gap-6">
         
+        {/* Live CloseBY Event Card */}
+        <div className="bg-gradient-to-r from-red-50 to-white dark:from-red-950/30 dark:to-slate-900/60 border border-red-200 dark:border-red-500/30 rounded-2xl p-4 shadow-lg shadow-red-900/10">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-red-500/15 border border-red-500/30 flex items-center justify-center">
+                <PhoneCall className="w-5 h-5 text-red-500" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-red-600 dark:text-red-400">🔴 Live CloseBY Event</p>
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">{liveEvent.title}</h3>
+                <p className="text-xs text-slate-600 dark:text-slate-300">{liveEvent.patient} • {liveEvent.time}</p>
+              </div>
+            </div>
+
+            <div className="flex flex-col items-start sm:items-end gap-1 text-xs text-slate-700 dark:text-slate-300">
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">✓ Fall detected</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">✓ Familiar voice played</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">✓ Emergency call initiated</span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">✓ Location available</span>
+            </div>
+          </div>
+
+          <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">📞 {liveEvent.status}</p>
+            <button
+              onClick={() => setIncomingCallModal(true)}
+              className="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-lg shadow-emerald-950/30"
+            >
+              Answer
+            </button>
+          </div>
+        </div>
+
         {/* Navigation Tabs Bar */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-slate-200 dark:border-slate-800 scrollbar-none">
           <button
@@ -377,38 +455,85 @@ export default function App() {
               <X className="w-5 h-5" />
             </button>
 
-            <div className="w-16 h-16 rounded-full bg-red-600/30 border-2 border-red-500 flex items-center justify-center animate-ping">
-              <PhoneCall className="w-8 h-8 text-red-500" />
-            </div>
+            {callState === 'incoming' || callState === 'sequence' ? (
+              <>
+                <div className="w-16 h-16 rounded-full bg-red-600/30 border-2 border-red-500 flex items-center justify-center animate-ping">
+                  <PhoneCall className="w-8 h-8 text-red-500" />
+                </div>
 
-            <div>
-                <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest bg-red-100 dark:bg-red-500/20 px-2 py-0.5 rounded border border-red-300 dark:border-red-500/30">
-                {callReason}
-              </span>
-              <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">CloseBY Neckband</h3>
-              <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">Connecting 2-Way Cellular Audio Line...</p>
-              <p className="text-[11px] text-emerald-400 font-semibold mt-2">📍 GPS Location: TKMCE Campus, Kollam</p>
-            </div>
+                <div>
+                  <span className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-widest bg-red-100 dark:bg-red-500/20 px-2 py-0.5 rounded border border-red-300 dark:border-red-500/30">
+                    {callReason}
+                  </span>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">CloseBY Neckband</h3>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-1">{callState === 'sequence' ? 'Simulated emergency sequence in progress...' : 'Connecting 2-Way Cellular Audio Line...'}</p>
+                  <p className="text-[11px] text-emerald-400 font-semibold mt-2">📍 GPS Location: TKMCE Campus, Kollam</p>
+                </div>
 
-            <div className="flex items-center justify-center gap-4 w-full pt-2">
-              <button
-                onClick={() => setIncomingCallModal(false)}
-                className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-red-950/50"
-              >
-                Decline
-              </button>
+                {callState === 'sequence' ? (
+                  <div className="w-full text-center text-[11px] font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-2 rounded-lg border border-slate-300 dark:border-slate-700">
+                    FALL DETECTED → FAMILIAR VOICE PLAYED → AUTOMATIC CALL TRIGGERED
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-center gap-4 w-full pt-2">
+                    <button
+                      onClick={() => setIncomingCallModal(false)}
+                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-red-950/50"
+                    >
+                      Decline
+                    </button>
 
-              <button
-                onClick={() => {
-                  alert("Connected 2-Way Call to CloseBY Neckband!");
-                  setIncomingCallModal(false);
-                }}
-                className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2"
-              >
-                <PhoneCall className="w-4 h-4" />
-                <span>Answer</span>
-              </button>
-            </div>
+                    <button
+                      onClick={() => {
+                        setCallState('connected');
+                      }}
+                      className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-emerald-950/50 flex items-center justify-center gap-2"
+                    >
+                      <PhoneCall className="w-4 h-4" />
+                      <span>Answer</span>
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <>
+                <div className="w-16 h-16 rounded-full bg-emerald-600/20 border-2 border-emerald-500 flex items-center justify-center">
+                  <PhoneCall className="w-8 h-8 text-emerald-500" />
+                </div>
+
+                <div>
+                  <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-widest bg-emerald-100 dark:bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-300 dark:border-emerald-500/30">
+                    CALL CONNECTED
+                  </span>
+                  <h3 className="text-xl font-black text-slate-900 dark:text-white mt-2">CloseBY Neckband</h3>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 mt-2">Two-way voice communication active</p>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-1">Patient: Mr. Raghunath Pillai</p>
+                  <p className="text-[11px] text-emerald-400 font-semibold mt-2">📍 GPS Location: Available</p>
+                  <p className="text-[11px] text-blue-500 font-semibold mt-1">Connection: 4G LTE</p>
+                </div>
+
+                <div className="flex items-center justify-center gap-2 text-xs text-emerald-600 dark:text-emerald-400 font-semibold bg-emerald-100 dark:bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-300 dark:border-emerald-500/30">
+                  <span className="inline-block w-2 h-2 rounded-full bg-emerald-500" />
+                  Connected
+                </div>
+
+                <div className="flex items-center justify-center gap-4 w-full pt-2">
+                  <button
+                    onClick={() => setCallState('incoming')}
+                    className="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 font-bold text-xs py-3 rounded-xl transition-all"
+                  >
+                    Mute
+                  </button>
+
+                  <button
+                    onClick={() => setIncomingCallModal(false)}
+                    className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs py-3 rounded-xl transition-all shadow-lg shadow-red-950/50"
+                  >
+                    End Call
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

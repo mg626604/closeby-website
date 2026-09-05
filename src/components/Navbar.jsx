@@ -35,13 +35,15 @@ export default function Navbar({ activeTab, setActiveTab, onSimulateFall, onSimu
             <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
             <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
               <Battery className="w-3.5 h-3.5 text-emerald-400" />
-              <span>88%</span>
+              <span>1200mAh Li-Po</span>
             </div>
             <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
             <div className="flex items-center gap-1 text-slate-700 dark:text-slate-300">
               <Signal className="w-3.5 h-3.5 text-blue-400" />
               <span>4G LTE</span>
             </div>
+            <div className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
+            <div className="text-amber-600 dark:text-amber-400 font-semibold">DEMO DEVICE</div>
           </div>
         </div>
 

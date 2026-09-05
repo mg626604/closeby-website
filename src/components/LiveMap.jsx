@@ -36,10 +36,10 @@ export default function LiveMap({ seniorLocation, safeZoneRadius, setSafeZoneRad
         <div>
           <div className="flex items-center gap-2">
             <MapPin className="w-5 h-5 text-red-400" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Real-Time Location & Geofence</h2>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Live Location & Safe-Zone Monitoring</h2>
           </div>
           <p className="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
-            Monitoring Senior: <span className="text-slate-800 dark:text-slate-200 font-semibold">{seniorLocation.name}</span> • Last ping: <span className="text-emerald-400 font-medium">Just now</span>
+            Monitoring Senior: <span className="text-slate-800 dark:text-slate-200 font-semibold">{seniorLocation.name}</span> • Demo device status: <span className="text-emerald-400 font-medium">SIMULATED</span>
           </p>
         </div>
 
