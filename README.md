@@ -2,23 +2,40 @@
 
 > **Detect → De-escalate → Connect**
 
+[![Live Website](https://img.shields.io/badge/Live%20Website-CloseBY-0b5cab?style=for-the-badge)](https://closeby-website.vercel.app/)
+[![Smart India Hackathon](https://img.shields.io/badge/SIH-2026-orange?style=for-the-badge)](https://www.sih.gov.in/)
+[![React](https://img.shields.io/badge/React-Frontend-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-Build-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vite.dev/)
+
 CloseBY is a student innovation project focused on improving emergency support for elderly people, especially people living with dementia.
 
 The proposed system combines wearable sensing, familiar family-voice guidance, location awareness and automatic caregiver communication in one safety-oriented neckband concept.
 
----
+## 🌐 Project Resources
 
-## 🌐 Live Website
+### Live Caregiver Platform
+**https://closeby-website.vercel.app/**
 
-**CloseBY Caregiver Platform**
+The web platform demonstrates the proposed caregiver experience, including:
 
-https://closeby-website.vercel.app/
+- Caregiver dashboard
+- Fall-event simulation
+- Band-removal simulation
+- Live location / geofence interface
+- Familial voice library
+- Timers and reminders
+- Emergency alert log
+- Vitals analytics
+- Caregiver circle
+- Simulated incoming emergency call with two-way communication flow
+
+> **Prototype note:** The website is a demonstration interface. Hardware integration and real-time validation are planned as part of the physical prototype development.
 
 ---
 
 ## 💡 Why CloseBY?
 
-Conventional safety wearables generally focus on detecting an event and notifying a caregiver.
+Conventional safety wearables generally focus on **detecting an event and notifying a caregiver**.
 
 CloseBY adds an **immediate response layer** between detection and caregiver assistance:
 
@@ -26,231 +43,110 @@ CloseBY adds an **immediate response layer** between detection and caregiver ass
 
 For example, after a detected fall, a locally stored family recording can provide a calm instruction such as:
 
-> "Dad, please stay still. Help is on the way."
+> “Dad, please stay still. Help is on the way.”
 
-At the same time, the system is designed to initiate an emergency cellular call so that a caregiver can respond.
-
-The familiar-voice approach is a research-informed design concept and requires real-world validation before it can be considered clinically established.
+The goal is not to replace the caregiver. It is to provide immediate, familiar guidance while the caregiver connection is being established.
 
 ---
 
-# 🎯 Project Objectives
+## ✨ Core Innovation
 
-- Detect possible falls and abnormal movement.
-- Detect possible neckband removal.
-- Provide familiar and personalized voice guidance.
-- Share location information with caregivers.
-- Initiate an automatic emergency caregiver connection.
-- Support two-way voice communication.
-- Monitor heart rate as a prototype feature.
-- Provide reminders and personalized family voice messages.
-- Give caregivers a simple web-based monitoring interface.
-- Keep safety-critical voice playback local so it does not depend on cloud connectivity.
+### 1. Familiar Family-Voice De-escalation
+Instead of relying only on a harsh alarm or synthetic notification, CloseBY proposes locally stored recordings from a familiar family member.
 
----
+### 2. Local-First Emergency Response
+Safety-critical voice prompts are intended to play from local storage, reducing dependence on cloud connectivity for the immediate audio response.
 
-# 🧠 Core Innovation
+### 3. Sensor-Fusion Based Event Detection
+Multiple signals can be combined to improve event classification rather than depending on a single sensor.
 
-### Most conventional approach
+### 4. Automatic Caregiver Connection
+After an emergency event is confirmed, the proposed system initiates an automatic cellular call so that the caregiver can answer and establish two-way voice communication.
 
-**Detect → Alert Caregiver**
-
-### CloseBY approach
-
-**Detect → De-escalate → Connect**
-
-The key idea is to combine **technical detection** with an **empathetic human-centered response**.
-
-CloseBY does not attempt to replace caregivers. It is designed to help bridge the time between an emergency event and human assistance.
+### 5. Wearable Safety + Caregiver Platform
+The neckband concept and caregiver website are designed as one connected system rather than isolated hardware and software components.
 
 ---
 
-# ⚙️ System Architecture
+# 🧠 System Architecture
 
-The proposed system is organized into four stages:
-
-## 1. SENSE
-
-The wearable collects information from multiple sensors.
-
-| Component | Purpose |
-|---|---|
-| **MPU6050** | 3-axis acceleration and gyroscope data for motion/fall detection |
-| **BMP280** | Barometric pressure and vertical movement support |
-| **MAX30102** | Heart-rate monitoring |
-| **Clasp + Body-Proximity Sensing** | Neckband removal detection |
-
-Multiple sensor inputs are intended to reduce dependence on a single sensor reading.
-
-## 2. THINK
-
-The **ESP32-S3** acts as the main controller.
-
-It is responsible for:
-
-- Sensor data collection
-- Sensor fusion
-- Event classification
-- Fall-event processing
-- Heart-rate data processing
-- Wear/removal detection
-- Reminder scheduling
-- Voice-prompt control
-- Audio and communication control
-- Power management
-- Local voice storage management
-
-Critical voice prompts are intended to be stored locally so that emergency voice playback does not depend on an internet connection.
-
-## 3. RESPOND
-
-The response system provides personalized audio guidance.
-
-### Audio path
-
-**SPI Flash → ESP32-S3 → I²S → MAX98357A → Speaker**
-
-The speaker can provide a pre-recorded familiar family message.
-
-Example:
-
-> "Dad, please stay still. Help is on the way."
-
-The goal is to provide immediate, familiar guidance while the caregiver connection is being established.
-
-## 4. CONNECT
-
-The communication layer is designed around cellular connectivity.
-
-### Proposed flow
-
-**Emergency Event → A7670C → Automatic Call → Caregiver**
-
-Once the caregiver answers, the system is designed to support two-way voice communication.
-
-The **INMP441 microphone** is intended for capturing the user's voice during the two-way call.
-
-Location availability depends on the selected cellular/GNSS hardware variant and network conditions.
-
----
-
-# 🚨 Emergency Event Flow
+CloseBY follows four functional layers:
 
 ```text
-        FALL / ABNORMAL EVENT
-                 │
-                 ▼
-       MPU6050 + BMP280
-                 │
-                 ▼
-            ESP32-S3
-       Event Classification
-                 │
-        ┌────────┴────────┐
-        ▼                 ▼
- Familiar Voice      Emergency Call
-   Playback              │
-        │                ▼
-        │          Caregiver Phone
-        │                │
-        └────────► Two-Way Voice
+┌─────────────────────────────────────────────────────────────┐
+│                         SENSE                               │
+│  MPU6050  •  BMP280  •  MAX30102  •  Clasp/Proximity       │
+└────────────────────────────┬────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                         THINK                               │
+│              ESP32-S3 • Sensor Fusion • Event Logic        │
+│       HR Processing • Voice Control • Power Management      │
+│                    Local SPI Flash Storage                  │
+└────────────────────────────┬────────────────────────────────┘
+                             │
+                ┌────────────┴────────────┐
+                ▼                         ▼
+┌──────────────────────────┐  ┌───────────────────────────────┐
+│        RESPOND           │  │            CONNECT            │
+│ MAX98357A → Speaker      │  │ A7670C → Cellular / Location │
+│ Familiar Family Voice    │  │ INMP441 → User Voice Input   │
+│ Local Playback           │  │ Caregiver Phone              │
+└──────────────────────────┘  └───────────────────────────────┘
 ```
 
-The intended sequence is:
+### Emergency Flow
 
-1. Sensors detect an abnormal event.
-2. ESP32-S3 processes the sensor information.
-3. A familiar family voice is played locally.
-4. The cellular module initiates an emergency call.
-5. The caregiver receives the call.
-6. After the caregiver answers, two-way communication can be established.
-
----
-
-# 📡 Caregiver Website
-
-The current CloseBY website demonstrates the proposed caregiver-side platform.
-
-### Dashboard
-
-The interface includes:
-
-- Device connection status
-- Battery status
-- 4G connectivity status
-- Emergency event controls
-- Fall simulation
-- Band-removal simulation
-
-### Location & Geofence
-
-The interface provides a proposed caregiver view for:
-
-- Current location
-- Safe-zone monitoring
-- Geofence status
-- Location-related alerts
-
-### Familial Voice Library
-
-Caregivers can manage personalized family voice messages intended for situations such as:
-
-- Emergency guidance
-- Reassurance
-- Band-removal events
-- Daily reminders
-
-### Timers & Reminders
-
-The platform includes a concept for scheduled personalized voice reminders.
-
-### Emergency Alert Log
-
-Caregivers can review simulated/recorded safety events through the dashboard.
-
-### Vitals Analytics
-
-The interface provides a heart-rate monitoring view corresponding to the proposed MAX30102-based sensing feature.
-
-### Caregiver Circle
-
-The platform includes a concept for managing multiple caregivers around the elderly user.
-
----
-
-# 🖥️ Website Demonstration Features
-
-The current website includes simulated interactions for demonstrating the proposed system.
-
-Examples include:
-
-- **Simulate Fall**
-- **Simulate Band Removal**
-- Emergency call interface
-- Location interface
-- Familial voice library
-- Reminder controls
-- Vitals interface
-- Caregiver dashboard
-
-These website simulations represent the proposed system workflow and should not be interpreted as proof of physical hardware performance.
+```text
+Fall / Emergency Event
+        ↓
+Sensor Detection
+        ↓
+ESP32-S3 Event Confirmation
+        ↓
+Familiar Family Voice Plays Locally
+        ↓
+Automatic Emergency Cellular Call
+        ↓
+Caregiver Answers
+        ↓
+Two-Way Voice Communication
+        ↓
+Caregiver Dashboard / Location Awareness
+```
 
 ---
 
 # 🔧 Proposed Hardware
 
-| Hardware | Function |
+| Component | Purpose |
 |---|---|
-| **Seeed Studio XIAO ESP32-S3** | Main controller |
-| **MPU6050** | Accelerometer + gyroscope |
-| **BMP280** | Barometric pressure sensing |
-| **MAX30102** | Heart-rate sensing |
-| **A7670C** | Cellular communication |
-| **INMP441** | Voice input for two-way communication |
-| **MAX98357A** | Digital audio amplifier |
-| **Speaker** | Family voice and call audio |
-| **SPI Flash** | Local storage for critical voice clips |
+| **Seeed Studio XIAO ESP32-S3** | Main controller, edge processing and audio/control logic |
+| **MPU6050** | 3-axis acceleration + gyroscope sensing |
+| **BMP280** | Barometric pressure / vertical movement support |
+| **MAX30102** | Heart-rate / optical PPG monitoring |
+| **A7670C** | 4G cellular communication; location capability depends on module variant |
+| **INMP441** | Microphone input for two-way call audio |
+| **MAX98357A** | I²S audio amplifier |
+| **Speaker** | Family voice prompts and call audio |
+| **SPI Flash** | Local storage for critical voice recordings |
 | **3.7 V 1200 mAh Li-Po** | Prototype power source |
+
+### Prototype BOM
+
+| Item | Estimated Cost |
+|---|---:|
+| XIAO ESP32-S3 | ₹450 |
+| MPU6050 + BMP280 | ₹250 |
+| MAX98357A + Speaker | ₹300 |
+| A7670C 4G / GPS | ₹1,200 |
+| 3.7 V 1200 mAh Li-Po + TP4056 | ₹300 |
+| INMP441 | ₹90 |
+| MAX30102 | ₹150 |
+| **Approx. prototype BOM** | **₹2,740** |
+
+> **Important:** ₹2,740 is a prototype BOM estimate, not a final manufacturing or retail cost.
 
 ---
 
@@ -260,241 +156,234 @@ These website simulations represent the proposed system workflow and should not 
 
 **Target runtime:** 2–3 days*
 
-*Runtime is a design target and requires validation through physical prototype testing.*
-
-Cellular communication can have significant power demands, so final runtime will depend on call frequency, network conditions, sensor sampling and power-management implementation.
+\*Runtime is a design target and must be validated during physical prototype testing. Actual runtime will depend strongly on cellular transmission, call duration, audio playback, sensor sampling and power-management implementation.
 
 ---
 
-# 💰 Prototype Bill of Materials
+# 🖥️ Caregiver Platform
 
-| Component Group | Approx. Cost |
-|---|---:|
-| XIAO ESP32-S3 | ₹450 |
-| MPU6050 + BMP280 | ₹250 |
-| MAX98357A + Speakers | ₹300 |
-| A7670C 4G / Location Module | ₹1,200 |
-| 3.7 V 1200 mAh Li-Po + TP4056 | ₹300 |
-| INMP441 | ₹90 |
-| MAX30102 | ₹150 |
-| **Approximate Prototype BOM** | **₹2,740** |
+The web application is designed as the caregiver-facing control and monitoring interface.
 
-> The above is a prototype BOM estimate, not a final manufacturing or retail cost.
+### Main Demonstration Modules
 
----
-
-# 🏗️ Prototype Status
-
-### Current Status
-
-**Prototype-ready design**
-
-The current website demonstrates the proposed caregiver platform and system interactions.
-
-### Planned Development
-
-The physical prototype development includes:
-
-1. Sensor integration
-2. ESP32-S3 firmware development
-3. Local voice playback
-4. Cellular call integration
-5. Two-way audio integration
-6. Location integration
-7. Power-management testing
-8. Neckband enclosure development
-9. Fall-event testing
-10. Real-world usability validation
-
-The physical prototype performance will need to be measured and validated before making accuracy, reliability or clinical claims.
+- **Dashboard** — device connection and system status
+- **Fall Simulation** — demonstrates the emergency workflow
+- **Band Removal Simulation** — demonstrates wear-state events
+- **Live Location & Geofence** — location-awareness interface
+- **Familial Voice Library** — personalized voice prompt management
+- **Timers & Reminders** — scheduled personalized guidance
+- **Emergency Alert Log** — event history
+- **Vitals Analytics** — visualization of available sensor data
+- **Caregiver Circle** — caregiver coordination concept
+- **Emergency Call Interface** — simulated incoming automatic emergency call
 
 ---
 
-# 🔬 Research Basis
+# 🧪 Prototype Status
 
-CloseBY was developed after reviewing research related to:
+### Current
+**Prototype-ready design + caregiver software demonstration**
 
-- Falls among older adults
-- Wearable acceptance in dementia
-- Wrist-based fall detection
-- Digital technologies for fall prevention
-- Personalized dementia-care interventions
-- Familiar and simulated-presence approaches
+### Planned during hackathon
+1. Hardware assembly
+2. Sensor integration
+3. ESP32-S3 firmware integration
+4. Local voice playback
+5. Cellular communication integration
+6. Fall-event testing
+7. Band-removal testing
+8. End-to-end caregiver communication testing
+9. Battery/runtime validation
+
+> The physical hardware should not be considered validated until these tests are completed.
+
+---
+
+# 📚 Research Basis
+
+CloseBY is informed by research covering falls, wearable adherence, dementia-related digital technologies and personalized interventions.
 
 ### Selected References
 
-1. **World Health Organization — Falls**  
-   https://www.who.int/news-room/fact-sheets/detail/falls
+- **WHO — Falls**
+  https://www.who.int/news-room/fact-sheets/detail/falls
 
-2. **Peterson et al. (2025) — Wearable Adherence in Dementia**  
-   DOI: `10.2196/63768`  
-   https://pubmed.ncbi.nlm.nih.gov/40743521/
+- **Peterson et al. (2025) — Enhancing Enrollment and Adherence in Long-Term Wearable Research on Dementia**
+  DOI: `10.2196/63768`
+  https://pubmed.ncbi.nlm.nih.gov/40743521/
 
-3. **Marques & Moreno (2023) — Online Fall Detection Using Wrist Devices**  
-   DOI: `10.3390/s23031146`  
-   https://pmc.ncbi.nlm.nih.gov/articles/PMC9920426/
+- **Marques & Moreno (2023) — Online Fall Detection Using Wrist Devices**
+  DOI: `10.3390/s23031146`
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC9920426/
 
-4. **Abraha et al. (2020) — Simulated Presence Therapy for Dementia**  
-   DOI: `10.1002/14651858.CD011882.pub3`  
-   https://pmc.ncbi.nlm.nih.gov/articles/PMC7170711/
+- **Abraha et al. (2020) — Simulated Presence Therapy for Dementia**
+  DOI: `10.1002/14651858.CD011882.pub3`
+  https://pmc.ncbi.nlm.nih.gov/articles/PMC7170711/
 
-5. **Davison et al. (2016) — Personalized Multimedia for Dementia**  
-   DOI: `10.1016/j.gerinurse.2015.08.013`  
-   https://pubmed.ncbi.nlm.nih.gov/26412509/
+- **Davison et al. (2016) — Personalized Multimedia for Dementia**
+  DOI: `10.1016/j.gerinurse.2015.08.013`
+  https://pubmed.ncbi.nlm.nih.gov/26412509/
 
-6. **Eost-Telling et al. (2024) — Digital Technologies to Prevent Falls in Dementia/MCI**  
-   DOI: `10.1093/ageing/afad238`  
-   https://pubmed.ncbi.nlm.nih.gov/38219225/
+- **Eost-Telling et al. (2024) — Digital Technologies for Falls in Dementia/MCI**
+  DOI: `10.1093/ageing/afad238`
+  https://pubmed.ncbi.nlm.nih.gov/38219225/
+
+### Research Gap
+
+From the studies reviewed, CloseBY identifies a practical gap between:
+
+**Detecting an emergency**  
+and  
+**providing immediate, reassuring assistance while connecting the caregiver.**
+
+CloseBY proposes:
+
+**Fall Detection → Familiar Family Voice → Automatic Caregiver Connection**
+
+> Prototype-stage, research-informed solution requiring real-world validation.
 
 ---
 
 # 🛠️ Technology Stack
 
 ### Frontend
-
 - React
 - Vite
 - JavaScript
-- HTML
 - CSS
 
-### Deployment
-
-- Vercel
-
 ### Proposed Embedded System
-
 - ESP32-S3
-- C/C++ firmware
-- I²C sensor communication
-- SPI Flash
-- I²S digital audio
-- Cellular communication
+- MPU6050
+- BMP280
+- MAX30102
+- A7670C
+- INMP441
+- MAX98357A
+- Local SPI Flash
+
+### Deployment
+- Vercel
 
 ---
 
-# 🚀 Running the Website Locally
+# 📁 Repository Structure
 
-### 1. Clone the repository
+```text
+closeby-website/
+├── public/
+├── src/
+│   ├── assets/
+│   ├── components/
+│   ├── App.jsx
+│   ├── App.css
+│   ├── index.css
+│   └── main.jsx
+├── index.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
+└── README.md
+```
+
+---
+
+# 🚀 Run Locally
+
+### Requirements
+
+- Node.js
+- npm
+
+### Installation
 
 ```bash
 git clone https://github.com/mg626604/closeby-website.git
-```
-
-### 2. Enter the project folder
-
-```bash
 cd closeby-website
-```
-
-### 3. Install dependencies
-
-```bash
 npm install
-```
-
-### 4. Start the development server
-
-```bash
 npm run dev
 ```
 
-The local development URL will normally be displayed in the terminal.
+The development server will provide a local URL in the terminal.
 
 ---
 
 # 🌍 Deployment
 
-The website is deployed using Vercel.
+The caregiver platform is deployed using Vercel.
 
-**Live deployment:**
-
+**Live:**  
 https://closeby-website.vercel.app/
 
 ---
 
 # 👥 Intended Users
 
-CloseBY is designed around the needs of:
-
-- Elderly people
-- People living with dementia
+- Elderly people living independently
+- People living with dementia or cognitive impairment
 - Family caregivers
-- Professional caregivers
 - Care homes and assisted-living environments
-
-The project is currently at the prototype stage and is not intended to replace professional medical care.
+- Caregiver networks
 
 ---
 
-# 🌱 Future Development
+# 🔮 Future Development
 
-Possible future improvements include:
-
-- More robust fall-event classification
-- Larger real-world activity datasets
-- Improved false-alarm reduction
-- Custom low-power PCB
-- Smaller neckband enclosure
-- Improved battery optimization
-- More flexible voice personalization
-- Multi-caregiver notification
-- Improved location reliability
+- Physical neckband enclosure
+- Custom PCB
+- Improved sensor-fusion algorithms
+- Real-world fall-event validation
+- Better false-positive handling
+- Low-power cellular operation
+- More flexible caregiver management
 - Secure cloud synchronization
-- User testing with appropriate ethical approval
-- Long-term usability and acceptance studies
+- Expanded personalized voice library
+- Accessibility-focused caregiver interface
+- Larger-scale usability and adherence studies
 
 ---
 
-# ⚠️ Limitations
+# ⚠️ Limitations & Responsible Use
 
-CloseBY is currently a student prototype-stage project.
+CloseBY is a **student prototype and research-informed concept**.
 
-The following require further testing and validation:
+It is not currently presented as a clinically validated medical device.
 
-- Fall-detection accuracy
-- False-positive and false-negative rates
-- Battery runtime
-- Cellular call reliability
-- Location accuracy
-- Two-way audio quality
-- Wearability and comfort
-- User acceptance
-- Familiar-voice effectiveness
-- Long-term reliability
+The project does not claim:
 
-CloseBY should not be considered a clinically validated medical device based on the current prototype.
+- clinical diagnostic accuracy
+- guaranteed emergency response
+- guaranteed fall detection in every situation
+- guaranteed battery runtime
+- proven reduction in injuries or hospitalizations
+- proven therapeutic effects of familiar voice prompts
+
+Real-world testing with appropriate safety, privacy and ethical controls is required before clinical or commercial deployment.
 
 ---
 
 # 🏆 Smart India Hackathon
 
-**Project Name:** CloseBY  
+**Project:** CloseBY  
 **Theme:** MedTech / BioTech / HealthTech  
 **Category:** Hardware  
-**Institution:** TKM College of Engineering  
-**Concept:** Empathetic Safety Neckband with Local Familial Voice De-Escalation
-
-### Core Message
-
-> **CloseBY doesn't just detect an emergency — it responds with familiarity and connects the caregiver.**
-
-**Detect → De-escalate → Connect**
+**Team:** CloseBY  
+**Institution:** TKM College of Engineering, Kerala
 
 ---
 
-# 🔗 Project Links
+# 🔗 Links
 
-### Live Website
+🌐 **Live Website**  
 https://closeby-website.vercel.app/
 
-### GitHub Repository
+💻 **GitHub Repository**  
 https://github.com/mg626604/closeby-website
 
 ---
 
-## 📌 Disclaimer
+## ❤️ CloseBY
 
-CloseBY is a student innovation and prototype-stage project developed for the Smart India Hackathon.
+> **Empathetic Eldercare: Familiar Voice • Calm Guidance • Real-Time Safety Support**
 
-The system concepts, simulations and proposed hardware architecture require physical testing and validation. No claims of clinical accuracy, medical diagnosis, treatment effectiveness or guaranteed emergency response are made.
+**Detect → De-escalate → Connect**
