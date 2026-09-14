@@ -38,7 +38,7 @@ export default function App() {
 
   // Senior GPS & Geofence State
   const [seniorLocation, setSeniorLocation] = useState({
-    name: 'Mr. Abhinav K (Father)',
+    name: 'Mr. Raghunath Pillai (Father)',
     lat: 8.8932,
     lng: 76.6141,
     homeLat: 8.8932,
